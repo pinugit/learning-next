@@ -1,22 +1,47 @@
 "use client";
 
-import { useState } from "react";
+import { error } from "console";
+import { useEffect, useState } from "react";
+
+interface dogData {
+  message: string;
+  status: string;
+}
 
 const getRandomDogs = async () => {
-  const dataReq = await fetch("https://dog.ceo/api/breeds/image/random");
-  return await dataReq.json();
+  try {
+    const dataReq = await fetch("https://dog.ceo/api/breeds/image/random");
+    const data = await dataReq.json();
+    return data;
+  } catch (error) {
+    throw error;
+  }
 };
-const Button = () => {
-  const [data, setData] = useState(getRandomDogs());
 
-  const handleButtonClick = async () => {
+const Button = () => {
+  const [data, setData] = useState<dogData | null>(null);
+  const [error, setError] = useState(null);
+
+  const fetchData = async () => {
     setData(await getRandomDogs());
+    setError(null);
   };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   return (
     <>
-      <img src={data.message} alt="" />
-      <button onClick={handleButtonClick}> click to refresh</button>
+      {error && <div>{error}</div>}
+      {data ? (
+        <img style={{ width: "300px" }} src={data?.message} alt="" />
+      ) : (
+        <div>loading..</div>
+      )}
+      <button className="btn btn-primary" onClick={fetchData}>
+        click to refresh
+      </button>
     </>
   );
 };
