@@ -1,17 +1,8 @@
 import Link from "next/link";
 import { sort } from "fast-sort";
-import { Suspense } from "react";
+import { props, userDataType } from "./page";
 
-interface userDataType {
-  name: string;
-  email: string;
-}
-
-interface props {
-  searchParams: { sortOrder: string };
-}
-
-const users = async ({ searchParams: { sortOrder } }: props) => {
+export const users = async ({ searchParams: { sortOrder } }: props) => {
   const res = await fetch("https://jsonplaceholder.typicode.com/users");
   const userData: userDataType[] = await res.json();
 
@@ -22,7 +13,7 @@ const users = async ({ searchParams: { sortOrder } }: props) => {
   return (
     <>
       <h1>users</h1>
-      <Suspense fallback={<p>Loading...</p>}>
+      <suspense>
         <table className="table-s table-zebra-zebra">
           <thead>
             <tr>
@@ -43,9 +34,7 @@ const users = async ({ searchParams: { sortOrder } }: props) => {
             ))}
           </tbody>
         </table>
-      </Suspense>
+      </suspense>
     </>
   );
 };
-
-export default users;
