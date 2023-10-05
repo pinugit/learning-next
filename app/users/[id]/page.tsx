@@ -1,9 +1,14 @@
+import React from "react";
+import { notFound } from "next/navigation";
+
 interface props {
   params: { id: number };
 }
 
 const page = ({ params: { id } }: props) => {
-  return <div>New User number {id}</div>;
+  if (id > 10) notFound();
+
+  return <div>page {id}</div>;
 };
 
 export default page;
