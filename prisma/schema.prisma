@@ -20,8 +20,8 @@ model Users {
 }
 
 model Products {
-  id       Int     @id @default(autoincrement())
-  name     String
-  price    Int     @default(0)
-  in_Stock Boolean @default(false)
+  id      Int     @id @default(autoincrement())
+  name    String
+  price   Int     @default(0)
+  inStock Boolean @default(false)
 }
