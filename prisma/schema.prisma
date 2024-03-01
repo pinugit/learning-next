@@ -18,3 +18,10 @@ model Users {
   active       Boolean  @default(true)
   regesteredAt DateTime @default(now())
 }
+
+model Products {
+  id       Int     @id @default(autoincrement())
+  name     String
+  price    Int     @default(0)
+  in_Stock Boolean @default(false)
+}
