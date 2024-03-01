@@ -1,25 +1,33 @@
 import { NextRequest, NextResponse } from "next/server";
-import { z } from "zod";
+import productSchema from "./schema";
+import schema from "../users/schema";
 
-const schema = z.object({
-  name: z.string().min(3),
-  category: z.union([
-    z.string().includes("dairy"),
-    z.string().includes("tools"),
-  ]),
-});
+export function GET(request: NextRequest) {
+  return NextResponse.json([
+    {
+      id: 1,
+      name: "mink",
+      price: 24,
+    },
+    {
+      id: 2,
+      name: "eggs",
+      price: 22,
+    },
+  ]);
+}
 
 export async function POST(request: NextRequest) {
   const body = await request.json();
 
-  const validate = schema.safeParse(body);
+  const validation = schema.safeParse(body);
 
-  if (!validate.success) {
+  if (!validation.success) {
     return NextResponse.json(
-      { error: validate.error.issues[0].message },
+      { error: validation.error.errors },
       { status: 400 }
     );
   }
 
-  return NextResponse.json(validate.data);
+  return NextResponse.json({ id: 10, name: body.name, price: body.price });
 }

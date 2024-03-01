@@ -1,46 +1,45 @@
+import { NextFetchEvent, NextRequest, NextResponse } from "next/server";
+import schema from "../schema";
+import prisma from "@/prisma/client";
 import { error } from "console";
-import { NextRequest, NextResponse } from "next/server";
-
+import { data } from "autoprefixer";
+import { stat } from "fs";
 interface props {
   params: { apiId: number };
 }
 
-export function GET(request: NextRequest, { params: { apiId } }: props) {
-  if (apiId > 3) {
+export async function GET(request: NextRequest, { params: { apiId } }: props) {
+  const user = await prisma.users.findUnique({
+    where: {
+      id: parseInt(apiId),
+    },
+  });
+  if (!user) {
     return NextResponse.json({ error: "user not found" }, { status: 404 });
   }
 
-  return NextResponse.json(
-    [
-      {
-        id: 1,
-        name: "pinu",
-      },
-      {
-        id: 2,
-        name: "john",
-      },
-      {
-        id: 3,
-        name: "mosh",
-      },
-    ][apiId - 1]
-  );
+  return NextResponse.json(user);
 }
 
 export async function PUT(request: NextRequest, { params: { apiId } }: props) {
   const body = await request.json();
+  const validate = schema.safeParse(body);
 
-  if (!body.name) {
-    return NextResponse.json(
-      { error: "please provide a user" },
-      { status: 400 }
-    );
+  if (!validate.success) {
+    return NextResponse.json({ error: validate.error.errors }, { status: 401 });
   }
 
-  if (apiId > 10) {
-    return NextResponse.json({ error: "user not found" }, { status: 404 });
-  }
+  const user = await prisma.users.create({
+    data: { name: body.name, email: body.email },
+  });
 
-  return NextResponse.json({ id: body.id, name: body.name }, { status: 200 });
+  return NextResponse.json({ user }, { status: 201 });
+}
+
+export async function DELETE(
+  request: NextRequest,
+  { params: { apiId } }: props
+) {
+  const body = await request.json();
+  return NextResponse.json({});
 }
